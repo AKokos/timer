@@ -26,6 +26,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/EasyBuzzer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Noodle-Synth-3.5.2/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/EEPROM/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/BlinkControl/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Shifty/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1296791167" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -38,6 +41,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/EasyBuzzer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Noodle-Synth-3.5.2/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/EEPROM/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/BlinkControl/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Shifty/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1621383832" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -50,6 +56,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/EasyBuzzer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Noodle-Synth-3.5.2/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/EEPROM/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/BlinkControl/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/timer/libraries/Shifty/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.204614313" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

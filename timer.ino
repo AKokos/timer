@@ -2,6 +2,8 @@
 #include <TM1637TinyDisplay.h>
 #include <GyverButton.h>
 #include <MusicWithoutDelay.h>
+#include <EEPROM.h>
+#include <BlinkControl.h>
 
 /**
  * Пока в ожидании кнопками добавляем\убавляем время, при долгом нажатии ускоряем процесс
@@ -17,12 +19,14 @@
 #define BTN_PLUS_PIN 4
 #define BTN_MINUS_PIN 5
 #define BTN_START_PIN 6
-//#define BUZZ_PIN 3
+#define PASSIZE_BUZZ_PIN 3
+#define ACTIVE_BUZZ_PIN 9
 
 #define DOT 0b01000000
 #define MODE_WAIT 0
 #define MODE_RUN 1
 #define MODE_FINISH 2
+#define MODE_CHANGE_VOLUME 3
 
 #define MAX_TIME 99*60 + 50
 #define MIN_TIME 10
@@ -39,6 +43,7 @@ unsigned long speedTmr;
 unsigned int time;
 unsigned long startTime = 1; //60;
 byte mode = MODE_WAIT;
+byte loudSignal = 0;
 
 bool show = true;
 byte speed = 1;
@@ -48,6 +53,7 @@ const char song[] PROGMEM
 		= {
 				"Blue:d=8,o=5,b=140:a,a#,d,g,a#,c6,f,a,4a#,g,a#,d6,d#6,g,d6,c6,a#,d,g,a#,c6,f,a,4a#,g,a#,d6,d#6,g,d6,c6,a#,d,g,a#,c6,f,a,4a#,g,a#,d6,d#6,g,d6,c6,a#,d,g,a#,a,c,f,2g" };
 MusicWithoutDelay buzzer(song);
+BlinkControl loudBuzzer(ACTIVE_BUZZ_PIN);
 
 void setup() {
 	display.setBrightness(0x0f);
@@ -56,21 +62,35 @@ void setup() {
 	minusBtn.setTimeout(500);
 	startBtn.setTimeout(2000);
 
-	showTime(startTime);
 	buzzer.begin(CHB, SQUARE, ENVELOPE0, 0);
+	pinMode(PASSIZE_BUZZ_PIN, INPUT);
 	stopSignal();
+
+	loudBuzzer.begin();
+	loudBuzzer.blink4(); // Blink four times per second
+	loudBuzzer.pause();
+
+	EEPROM.get(0, loudSignal);
+	showCurrentSignalLevel();
+	delay(1500);
 }
 
 void loop() {
 	buzzer.update();
+	loudBuzzer.loop();
+
 	switch (mode) {
 		case MODE_WAIT:
 			plusBtn.tick();
 			minusBtn.tick();
 			startBtn.tick();
 
-			changeStartTime(&plusBtn, 10);
-			changeStartTime(&minusBtn, -10);
+			if (plusBtn.isHold() && minusBtn.isHold()) {
+				mode = MODE_CHANGE_VOLUME;
+			} else {
+				changeStartTime(&plusBtn, 10);
+				changeStartTime(&minusBtn, -10);
+			}
 
 			// start timer
 			if (startBtn.isClick()) {
@@ -131,7 +151,33 @@ void loop() {
 				mode = MODE_WAIT;
 			}
 			break;
+		case MODE_CHANGE_VOLUME:
+			if (millis() - tmr >= 500) {
+				tmr = millis();
+				show = !show;
+				if (show) {
+					showCurrentSignalLevel();
+				} else {
+					display.clear();
+				}
+			}
+
+			if (plusBtn.isClick() || minusBtn.isClick()) {
+				loudSignal = loudSignal ? 0 : 1;
+			}
+
+			if (startBtn.isClick()) {
+				EEPROM.put(0, loudSignal);
+				showCurrentSignalLevel();
+				delay(1500);
+				mode = MODE_WAIT;
+			}
+			break;
 	}
+}
+
+void showCurrentSignalLevel() {
+	display.showString(loudSignal ? "Loud" : "Soft");
 }
 
 void showTime(unsigned int dispTime) {
@@ -145,7 +191,7 @@ void showTime(unsigned int dispTime, bool showColon) {
 }
 
 void changeStartTime(GButton *btn, int delta) {
-	if (delta < 0 && startTime <= MIN_TIME || delta > 0 && startTime >= MAX_TIME) {
+	if ((delta < 0 && startTime <= MIN_TIME) || (delta > 0 && startTime >= MAX_TIME)) {
 		return;
 	}
 	if (btn->isClick()) {
@@ -170,11 +216,19 @@ void changeStartTime(GButton *btn, int delta) {
 }
 
 void playSignal() {
-	pinMode(3, OUTPUT); // prevent noise
-	buzzer.play();
+	if (loudSignal) {
+		loudBuzzer.resume();
+	} else {
+		pinMode(PASSIZE_BUZZ_PIN, OUTPUT); // prevent noise
+		buzzer.play();
+	}
 }
 
 void stopSignal() {
-	pinMode(3, INPUT); // prevent noise
-	buzzer.pause(true);
+	if (loudSignal) {
+		loudBuzzer.pause();
+	} else {
+		pinMode(PASSIZE_BUZZ_PIN, INPUT); // prevent noise
+		buzzer.pause(true);
+	}
 }

@@ -42,6 +42,16 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.8.2/variants/eightanaloginputs</locationURI>
 		</link>
 		<link>
+			<name>libraries/BlinkControl</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/BlinkControl/1.1.0</locationURI>
+		</link>
+		<link>
+			<name>libraries/EEPROM</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.8.2/libraries/EEPROM</locationURI>
+		</link>
+		<link>
 			<name>libraries/EasyBuzzer</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/EasyBuzzer/1.0.4</locationURI>
@@ -55,6 +65,11 @@
 			<name>libraries/Noodle-Synth-3.5.2</name>
 			<type>2</type>
 			<location>C:/Program Files (x86)/Arduino/libraries/Noodle-Synth-3.5.2</location>
+		</link>
+		<link>
+			<name>libraries/Shifty</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Shifty/0.1.5</locationURI>
 		</link>
 		<link>
 			<name>libraries/TM1637TinyDisplay</name>
