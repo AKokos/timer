@@ -76,15 +76,14 @@ void setup() {
 }
 
 void loop() {
+	plusBtn.tick();
+	minusBtn.tick();
+	startBtn.tick();
 	buzzer.update();
 	loudBuzzer.loop();
 
 	switch (mode) {
 		case MODE_WAIT:
-			plusBtn.tick();
-			minusBtn.tick();
-			startBtn.tick();
-
 			if (plusBtn.isHold() && minusBtn.isHold()) {
 				mode = MODE_CHANGE_VOLUME;
 			} else {
@@ -101,8 +100,6 @@ void loop() {
 			showTime(startTime);
 			break;
 		case MODE_RUN:
-			startBtn.tick();
-
 			// pause/resume
 			if (startBtn.isClick()) {
 				running = !running;
@@ -136,7 +133,6 @@ void loop() {
 
 			break;
 		case MODE_FINISH:
-			startBtn.tick();
 			if (millis() - tmr >= 500) {
 				tmr = millis();
 				show = !show;
