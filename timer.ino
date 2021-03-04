@@ -27,6 +27,7 @@
 #define MODE_RUN 1
 #define MODE_FINISH 2
 #define MODE_CHANGE_VOLUME 3
+#define MODE_STOPWATCH 4
 
 #define MAX_TIME 99*60 + 50
 #define MIN_TIME 10
@@ -41,7 +42,7 @@ unsigned long tmr;
 unsigned long speedTmr;
 
 unsigned int time;
-unsigned long startTime = 1; //60;
+unsigned long startTime = 60;
 byte mode = MODE_WAIT;
 byte loudSignal = 0;
 
@@ -56,6 +57,7 @@ MusicWithoutDelay buzzer(song);
 BlinkControl loudBuzzer(ACTIVE_BUZZ_PIN);
 
 void setup() {
+	Serial.begin(9600);
 	display.setBrightness(0x0f);
 
 	plusBtn.setTimeout(500);
@@ -86,6 +88,16 @@ void loop() {
 		case MODE_WAIT:
 			if (plusBtn.isHold() && minusBtn.isHold()) {
 				mode = MODE_CHANGE_VOLUME;
+				break;
+			} else if (startBtn.isHold()) {
+				Serial.println("double click");
+				mode = MODE_STOPWATCH;
+				time = 0;
+				display.showString("Counter   ");
+				showTime(time);
+				running = false;
+				tmr = millis();
+				break;
 			} else {
 				changeStartTime(&plusBtn, 10);
 				changeStartTime(&minusBtn, -10);
@@ -93,6 +105,7 @@ void loop() {
 
 			// start timer
 			if (startBtn.isClick()) {
+				Serial.println("click");
 				mode = MODE_RUN;
 				time = startTime;
 				tmr = millis();
@@ -109,8 +122,8 @@ void loop() {
 				}
 			}
 
-			// reset on hold
-			if (startBtn.isHolded()) {
+			// reset on dbl-click
+			if (startBtn.isDouble()) {
 				mode = MODE_WAIT;
 			}
 
@@ -169,6 +182,40 @@ void loop() {
 				mode = MODE_WAIT;
 			}
 			break;
+		case MODE_STOPWATCH:
+			// run/pause
+			if (startBtn.isClick()) {
+				show = true;
+				running = !running;
+				tmr = millis();
+			}
+			// counting
+			if (running && millis() - tmr >= 1000) {
+				tmr = millis();
+				showTime(++time);
+			}
+
+			if (startBtn.isDouble()) {
+				time = 0;
+				showTime(0);
+				running = false;
+			}
+
+			// return to timer mode
+			if (!running && startBtn.isHold()) {
+				mode = MODE_WAIT;
+				showTime(startTime);
+				running = true;
+				display.showString("Timer   ");
+			}
+
+			// timer on pause
+			if (!running && millis() - tmr >= 500) {
+				tmr = millis();
+				show = !show;
+				showTime(time, show);
+			}
+			break;
 	}
 }
 
@@ -198,7 +245,7 @@ void changeStartTime(GButton *btn, int delta) {
 		speedTmr = millis();
 		tmr = millis();
 	}
-	if (btn->isHold() && (millis() - tmr) >= 100 / speed) {
+	if (btn->isHold() && !startBtn.isHold() && (millis() - tmr) >= 100 / speed) {
 		tmr = millis();
 		startTime += delta;
 		if (speed < 64 && millis() - speedTmr >= 1000) {
